@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram Profile Clone</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://kit.fontawesome.com/your-fontawesome-kit.js" crossorigin="anonymous"></script>
+    <style>
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: Arial, sans-serif;
+        }
+        .profile-main {
+            position: relative;
+            height: 100vh;
+            width: 100vw;
+            max-width: 640px;
+            left: 24%;
+            padding: 100px;
+        }
+        .profile-container {
+            max-width: 600px;
+            text-align: center;
+        }
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            padding-bottom: 20px;
+            border-bottom: 0.02em solid rgba(175, 167, 167, 0.2);
+        }
+        .profile-pic {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            cursor: pointer;
+        }
+        .profile-info {
+            flex: 1;
+            text-align: left;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .stats {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        .edit-btn {
+            background-color: #262626;
+            color: white;
+            border: 1px solid gray;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .edit-btn:hover {
+            background-color: #333;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: #222;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .modal input {
+            display: block;
+            margin: 10px auto;
+            padding: 5px;
+            width: 80%;
+        }
+        .modal button {
+            margin-top: 10px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .post-cards {
+            margin-top: 20px;
+            width: 400px;
+            border: 0.02em solid rgba(175, 167, 167, 0.2);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .post-cards img {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+        }
+        .photo-post {
+            width: 100%;
+            height: auto;
+            overflow: hidden;
+        }
+        .caption-box {
+            width: 100%;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .heart-btn {
+            font-size: 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="navbar-container"></div>
+
+    <div class="profile-main">
+        <div class="profile-container">
+            <div class="profile-header">
+                <img src="css/images/screenshot1.png" alt="Profile Picture" class="profile-pic" id="profilePic" onclick="openModal()">
+                <div class="profile-info">
+                    <h2 id="usernameDisplay">rirery2097</h2>
+                    <button class="edit-btn" onclick="openModal()">Edit Profile</button>
+                    <div class="stats">
+                        <span><strong id="postCount">0</strong> posts</span>
+                        <span><strong>113</strong> followers</span>
+                        <span><strong>1,042</strong> following</span>
+                    </div>
+                    <p id="bioDisplay">Ri야🌱<br>when you lose small mind you free your life</p>
+                </div>
+            </div>
+
+            <div id="postContainer"></div>
+        </div>
+
+        <div class="modal" id="editModal">
+            <div class="modal-content">
+                <h3>Edit Profile</h3>
+                <input type="file" id="imageUpload" accept="image/*">
+                <input type="text" id="usernameInput" placeholder="Enter username">
+                <input type="text" id="bioInput" placeholder="Enter bio">
+                <button onclick="saveChanges()">Save</button>
+                <button onclick="closeModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load Navbar
+        fetch("navbar.html")
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById("navbar-container").innerHTML = data;
+            })
+            .catch(error => console.error("Error loading navbar:", error));
+
+        // Load Profile Info from LocalStorage
+        document.addEventListener("DOMContentLoaded", function () {
+            loadProfile();
+            loadPosts();
+        });
+
+        function loadProfile() {
+            const storedUsername = localStorage.getItem("username");
+            const storedBio = localStorage.getItem("bio");
+            const storedProfilePic = localStorage.getItem("profilePic");
+
+            if (storedUsername) document.getElementById("usernameDisplay").innerText = storedUsername;
+            if (storedBio) document.getElementById("bioDisplay").innerText = storedBio;
+            if (storedProfilePic) document.getElementById("profilePic").src = storedProfilePic;
+        }
+
+        function openModal() {
+            document.getElementById("editModal").style.display = "flex";
+        }
+
+        function closeModal() {
+            document.getElementById("editModal").style.display = "none";
+        }
+
+        function saveChanges() {
+            const username = document.getElementById("usernameInput").value;
+            const bio = document.getElementById("bioInput").value;
+
+            if (username) {
+                localStorage.setItem("username", username);
+                document.getElementById("usernameDisplay").innerText = username;
+            }
+
+            if (bio) {
+                localStorage.setItem("bio", bio);
+                document.getElementById("bioDisplay").innerText = bio;
+            }
+
+            closeModal();
+        }
+
+        document.getElementById("imageUpload").addEventListener("change", function (event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById("profilePic").src = e.target.result;
+                    localStorage.setItem("profilePic", e.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function loadPosts() {
+            const postContainer = document.getElementById("postContainer");
+            let posts = JSON.parse(localStorage.getItem("posts")) || [];
+
+            document.getElementById("postCount").innerText = posts.length;
+
+            posts.forEach(post => {
+                const postDiv = document.createElement("div");
+                postDiv.classList.add("post-cards");
+                postDiv.innerHTML = `
+                    <div class="photo-post">
+                        <img src="${post.image}" alt="">
+                    </div>
+                    <div class="caption-box">
+                        <i class="fa-regular fa-heart heart-btn" onclick="toggleLike(this)"></i>
+                        <p>${post.caption}</p>
+                    </div>
+                `;
+                postContainer.appendChild(postDiv);
+            });
+        }
+
+        function toggleLike(element) {
+            element.classList.toggle('fa-regular');
+            element.classList.toggle('fa-solid');
+            element.style.color = element.classList.contains('fa-solid') ? 'red' : '';
+        }
+    </script>
+</body>
+</html>

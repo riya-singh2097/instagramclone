@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram Profile Clone</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: Arial, sans-serif;
+        }
+.main-div{
+    position: relative;
+            height: 70vh;
+            width: 100vw;
+            max-width: 640px;
+            left: 24%;
+            padding: 100px;
+}
+        .create-post {
+            background-color: #060606;
+            color: #f8f7f7;
+            width: 400px;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+            font-size: 20px;
+            font-weight: bold;
+            color: red;
+        }
+
+        .preview {
+            margin-top: 10px;
+            max-width: 100%;
+            border-radius: 5px;
+        }
+
+        input[type="file"],
+        textarea,
+        button {
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        textarea {
+            resize: none;
+            height: 60px;
+            padding: 5px;
+        }
+</style>
+           
+</head>
+
+<body>
+    <div id="navbar-container"></div>
+    <div class="main-div">
+    <div class="create-post">
+        <span class="close-btn" onclick="closePost()">&times;</span>
+        <h2>Create a Post</h2>
+        <input type="file" id="imageInput" accept="image/*">
+        <br>
+        <img id="preview" class="preview" style="display: none;" />
+        <textarea id="captionInput" placeholder="Enter caption"></textarea>
+        <button onclick="uploadImage()">Post</button>
+    </div>
+</div>
+    <script>
+        //navbar
+        fetch("navbar.html")
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById("navbar-container").innerHTML = data;
+            })
+            .catch(error => console.error("Error loading navbar:", error));
+
+            document.getElementById('imageInput').addEventListener('change', function () {
+    const fileInput = this;
+    const preview = document.getElementById('preview');
+
+    if (fileInput.files.length === 0) return;
+
+    const file = fileInput.files[0];
+    const reader = new FileReader();
+
+    reader.onload = function (event) {
+        preview.src = event.target.result;
+        preview.style.display = 'block';
+    };
+
+    reader.readAsDataURL(file);
+});
+
+function uploadImage() {
+    const captionInput = document.getElementById('captionInput').value;
+    const imageInput = document.getElementById('preview').src;
+
+    if (!imageInput || imageInput === window.location.href) {
+        alert('Please select an image to upload.');
+        return;
+    }
+
+    const post = {
+        image: imageInput,
+        caption: captionInput,
+        timestamp: new Date().getTime()
+    };
+
+    let posts = JSON.parse(localStorage.getItem('posts')) || [];
+    posts.unshift(post); // Add new post at the beginning
+    localStorage.setItem('posts', JSON.stringify(posts));
+
+    alert('Post uploaded successfully!');
+    window.location.href = 'profile.html'; // Redirect to profile page
+}
+
+    </script>
+</body>
+
+</html>

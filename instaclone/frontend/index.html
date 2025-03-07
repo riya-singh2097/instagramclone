@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>login/signup</title>
+    <link rel="stylesheet" href="css/loginsignupstyle.css">
+    
+</head>
+
+<body>
+    <script defer src="js/loginsignup.js"></script>
+    <!-- <script defer src="Signup.js"></script> -->
+    <div class="main-container">
+        <div class="mobile-slideshow">
+            <img src="css/images/home-phones.png" id="homeimg" alt="">
+            <img src="css/images/screenshot1.png" class="imgs" id="s1" alt="">
+            <img src="css/images/screenshot2.png" class="imgs" id="s2" alt="">
+            <img src="css/images/screenshot3.png" class="imgs" id="s3" alt="">
+            <img src="css/images/screenshot4.png" class="imgs" id="s4" alt="">
+        </div>
+        <div class="login">
+            <div class="login-signup-warpper">
+                <!-- logo -->
+                <div class="logo">
+                    <span id="logo"></span>
+                </div>
+                <!-- form -->
+                <div class="form-container">
+                    <form  method="post">
+
+
+                        <div class="input-box">
+                            <input type="text" class="form-input" name="username" required>
+                            <label>Phone number, username or email address</label>
+                        </div>
+                        <div class="input-box">
+                            <input type="password" class="form-input password-input" name="password" required>
+                            <label>Password</label>
+                            <div class="hide-show">
+                                <span class="hide-show-text">SHOW</span>
+                            </div>
+                        </div>
+                         <input type="submit" value="Login">
+                        <!-- Success message area -->
+                        <p id="login-message-box"></p>
+                    </form>
+
+                </div>
+
+            </div>
+            <div class="link-container">
+                <span>Don't have an account? <a href="#" class="signup-link">Sign up</a></span>
+
+            </div>
+        </div>
+
+
+        <div class="signup">
+            <div class="login-signup-warpper">
+                <!-- logo -->
+                <div class="logo">
+                    <span id="logo"></span>
+                </div>
+                <!-- form -->
+                <div class="form-container">
+                    <form method="post">
+
+
+                        <div class="input-box">
+                            <input type="text" class="form-input" name="username" required>
+                            <label>Phone number, username or email address</label>
+                        </div>
+                        <div class="input-box">
+                            <input type="password" class="form-input password-input" name="password" required>
+                            <label>Password</label>
+                            <div class="hide-show">
+                                <span class="hide-show-text">SHOW</span>
+                            </div>
+                        </div>
+                        <div class="input-box">
+                            <input type="password" class="form-input password-input" name="confirmPassword"  required>
+                            <label>Confirm Password</label>
+                            <div class="hide-show">
+                                <span class="hide-show-text">SHOW</span>
+                            </div>
+                        </div>
+                        <input type="submit" value="Signup">
+                    <!-- Success message area -->
+                    <p id="signup-message-box"></p>
+                    <!-- <div id="signup-message" style="color: green; margin-top: 10px;"></div> -->
+                    </form>
+
+                </div>
+
+            </div>
+                <div class="link-container">
+                    <span>Already have an account? <a href="#" class="login-link">Login</a></span>
+
+                </div>
+        </div>
+    
+    </div>
+    <script>
+
+           // Handle login form submission
+document.querySelector(".login form").addEventListener("submit", async function (event) {
+    event.preventDefault();
+
+    let username = document.querySelector(".login input[name='username']").value;
+    let password = document.querySelector(".login input[name='password']").value;
+    let messageBox = document.querySelector("#login-message-box"); // Ensure this element exists in your HTML
+
+    let formData = { username, password };
+
+    try {
+        let response = await fetch("http://localhost:7000/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(formData),
+            mode: "cors" // Ensure CORS mode
+        });
+
+        let data = await response.json(); // Convert response to JSON
+
+        if (response.ok) {
+            // If login is successful, redirect to profile page
+            window.location.href = "scroll.html";
+        } else {
+            // Display error message if login fails
+            messageBox.style.color = "red";
+            messageBox.style.textAlign = "center";
+            messageBox.innerText = data.error || "Login failed!";
+        }
+
+    } catch (error) {
+        messageBox.style.color = "red";
+        messageBox.style.textAlign = "center";
+        messageBox.innerText = "An error occurred!";
+        // console.error("Login Error:", error);
+    }
+});
+
+            // Handle signup form submission
+            document.querySelector(".signup form").addEventListener("submit", async function (event) {
+                event.preventDefault();
+
+                let username = document.querySelector(".signup input[name='username']").value;
+                let password = document.querySelector(".signup input[name='password']").value;
+                let confirmpassword = document.querySelector(".signup input[name='confirmPassword']").value;
+                let signupMessageBox = document.getElementById("signup-message-box");
+
+                if (password !== confirmpassword) {
+                    alert("Passwords do not match!");
+                    return;
+                }
+
+                let formData = { username, password, confirmpassword };
+
+                try {
+                    let response = await fetch("http://localhost:7000/signup", { 
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(formData),
+                        mode: "cors" // Ensure CORS mode
+                    });
+
+                     let data = await response.json();
+                     if (!signupMessageBox) {
+                        console.error("Error: #signup-message element not found in DOM!");
+                        return;
+                    }
+            if (response.ok) {
+                signupMessageBox.style.color = "#AAFF00";
+                signupMessageBox.style.textAlign = "center";
+                signupMessageBox.innerText = "Signup successful! Now Login";
+            } else {
+                signupMessageBox.style.color = "red";
+                signupMessageBox.style.textAlign = "center";
+                signupMessageBox.innerText = data.error || "Signup failed!";
+            }
+
+        } catch (error) {
+            signupMessageBox.style.color = "red";
+            signupMessageBox.style.textAlign = "center";
+            signupMessageBox.innerText = "An error occurred!";
+            console.error("Signup Error:", error);
+        }
+            });
+
+    </script>
+  
+</body>
+
+</html>
